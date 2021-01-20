@@ -13,4 +13,4 @@
 
 ## 8.1 Онлайн репортаж (Backend)
 
-### Описание задания во [Frontend](https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Onlain-report-Frontend) части.
+### Описание задания во [Frontend](https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Frontend) части.
