@@ -1,0 +1,35 @@
+{
+  "name": "ahj-hw.-8-sse-ws.-1-online-report-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prestart": "npm install",
+    "start": "forever server.js",
+    "watch": "forever -w server.js",
+    "stop": "forever stop server.js",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": "11.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Backend/issues"
+  },
+  "homepage": "https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Backend#readme",
+  "dependencies": {
+    "forever": "^3.0.4",
+    "koa": "^2.13.1",
+    "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
