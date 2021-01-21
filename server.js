@@ -11,7 +11,7 @@ const dirPublic = path.join(__dirname, 'public');
 app.use(koaStatic(dirPublic));
 
 app.use(async (ctx, next) => {
-  ctx.response.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+  ctx.response.set('Access-Control-Allow-Origin', '*');
   await next();
 });
 
