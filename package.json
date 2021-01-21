@@ -24,8 +24,11 @@
   "homepage": "https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Backend#readme",
   "dependencies": {
     "forever": "^3.0.4",
+    "http-event-stream": "^0.2.0",
     "koa": "^2.13.1",
-    "koa-static": "^5.0.0"
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
+    "nanoid": "^3.1.20"
   },
   "devDependencies": {
     "eslint": "^7.18.0",
