@@ -87,7 +87,6 @@ router.get('/sse', async (ctx) => {
         // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
         // eslint-disable-next-line no-console
         console.log('Stream closed on client');
-        console.log('interval', interval);
         clearInterval(interval);
       };
     },
