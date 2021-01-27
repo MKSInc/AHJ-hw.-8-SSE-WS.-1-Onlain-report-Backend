@@ -52,7 +52,7 @@ router.get('/sse', async (ctx) => {
     // через return. Если восстановить связь после того как
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
-      const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
+      const lastEventIndex = game.events.findIndex((event) => `${event.id}` === lastEventId);
       console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
       const result = game.events.splice(lastEventIndex);
