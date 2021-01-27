@@ -36,8 +36,15 @@ router.get('/events', async (ctx) => {
   game.lastSentEvent = game.events[game.events.length - 1];
 });
 
+router.get('/restart', async (ctx) => {
+  console.log('Game has been restarted');
+  game.restart();
+  ctx.body = 'Game has been restarted';
+});
+
 router.get('/sse', async (ctx) => {
   console.log('Start /sse');
+  game.lastSentEvent = null;
   await streamEvents(ctx.req, ctx.res, {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);

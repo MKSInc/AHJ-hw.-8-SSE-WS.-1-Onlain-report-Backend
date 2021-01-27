@@ -16,6 +16,13 @@ class Game {
     }, 1000);
   }
 
+  restart() {
+    this.events = [];
+    this.eventsCount = 1;
+    this.lastSentEvent = null;
+    this.start();
+  }
+
   getEventType() {
     if (this.eventsCount === 1) return 'start';
     if (this.eventsCount === 50) return 'end';
