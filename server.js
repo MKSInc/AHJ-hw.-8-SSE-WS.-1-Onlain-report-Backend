@@ -32,9 +32,12 @@ game.start();
 
 router.get('/events', async (ctx) => {
   console.log('ctx.params.id', ctx.params.id);
-  ctx.response.body = JSON.stringify(game.events);
-  game.lastSentEvent = game.events[game.events.length - 1];
-  console.log('/events game.events.length', game.events.length);
+  const eventsArr = [];
+  game.events.forEach((event) => eventsArr.push(event));
+  ctx.response.body = JSON.stringify(eventsArr);
+  // game.lastSentEvent = game.events[game.events.size - 1];
+  game.lastSentEvent = game.events.get(game.events.size);
+  console.log('/events game.events.length', game.events.size);
   console.log('/events game.lastSentEvent', game.lastSentEvent);
 });
 
@@ -54,6 +57,7 @@ router.get('/sse', async (ctx) => {
     // через return. Если восстановить связь после того как
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
+      /*
       const lastEventIndex = game.events.findIndex((event) => `${event.id}` === lastEventId);
       console.log('lastEventIndex:', lastEventIndex);
       console.log('game.events.length', game.events.length);
@@ -61,21 +65,25 @@ router.get('/sse', async (ctx) => {
       console.log('game.lastSentEvent', game.lastSentEvent);
       const result = game.events.splice(lastEventIndex + 1);
       console.log('return result', result);
+       */
+      console.log('game.events.size', game.events.size);
       console.log('!!!!!!!!!!!!!!');
       return [{ id: 'fetch', data: 'from fetch' }];
       // return game.events.splice(lastEventIndex);
     },
     stream(sse) {
       console.log('stream(sse) start');
-      console.log('!!!!! stream(sse) start game.events.length', game.events.length);
+      console.log('!!!!! stream(sse) start game.events.size', game.events.size);
       const interval = setInterval(() => {
         console.log(`game.eventsCount: ${game.eventsCount}`);
-        console.log('game.events.length', game.events.length);
+        console.log('game.events.size', game.events.size);
         if (!game.lastSentEvent) {
           console.log('---- SSE send events[0] -----');
-          sse.sendEvent(game.events[0]);
-          game.lastSentEvent = game.events[0];
-        } else {
+          // sse.sendEvent(game.events[0]);
+          // game.lastSentEvent = game.events[0];
+          sse.sendEvent(game.events.get(1));
+          game.lastSentEvent = game.events.get(1);
+        } else {/*
           const lastSentEventIndex = game.events.findIndex((event) => event.id === game.lastSentEvent.id);
           console.log('lastSentEventIndex', lastSentEventIndex);
           // Проверяем, появилось ли новое событие после последнего отправленного.
@@ -94,7 +102,7 @@ router.get('/sse', async (ctx) => {
             ctx.res.status = 204; // Ни чего не дает (возможно, не правильно использую).
             sse.close(); // Закрывает поток, но браузер переподключается по новой.
             // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
-          }
+          } */
         }
       }, 2000);
 
