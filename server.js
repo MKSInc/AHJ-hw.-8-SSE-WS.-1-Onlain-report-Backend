@@ -67,11 +67,12 @@ router.get('/sse', async (ctx) => {
     },
     stream(sse) {
       console.log('stream(sse) start');
+      console.log('!!!!! stream(sse) start game.events.length', game.events.length);
       const interval = setInterval(() => {
         console.log(`game.eventsCount: ${game.eventsCount}`);
         console.log('game.events.length', game.events.length);
         if (!game.lastSentEvent) {
-          console.log('SSE send events[0]');
+          console.log('---- SSE send events[0] -----');
           sse.sendEvent(game.events[0]);
           game.lastSentEvent = game.events[0];
         } else {
@@ -97,6 +98,7 @@ router.get('/sse', async (ctx) => {
         }
       }, 2000);
 
+      console.log('!!!!! stream(sse) end start game.events.length', game.events.length);
       return () => {
         // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
         // eslint-disable-next-line no-console
