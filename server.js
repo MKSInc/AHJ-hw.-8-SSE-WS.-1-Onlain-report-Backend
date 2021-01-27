@@ -52,7 +52,7 @@ router.get('/sse', async (ctx) => {
       return events2;
     },
     stream(sse) {
-      console.log('Request');
+      console.log('Request1');
       const interval = setInterval(() => {
         console.log(`Event send ${game.eventsCount}`);
         // console.log(game);
