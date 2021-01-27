@@ -34,6 +34,8 @@ router.get('/events', async (ctx) => {
   console.log('ctx.params.id', ctx.params.id);
   ctx.response.body = JSON.stringify(game.events);
   game.lastSentEvent = game.events[game.events.length - 1];
+  console.log('/events game.events.length', game.events.length);
+  console.log('/events game.lastSentEvent', game.lastSentEvent);
 });
 
 router.get('/restart', async (ctx) => {
