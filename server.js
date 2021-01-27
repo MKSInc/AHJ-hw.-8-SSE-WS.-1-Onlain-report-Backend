@@ -65,7 +65,7 @@ router.get('/sse', async (ctx) => {
       // return game.events.splice(lastEventIndex);
     },
     stream(sse) {
-      console.log('Request');
+      console.log('stream(sse) start');
       const interval = setInterval(() => {
         console.log(`game.eventsCount: ${game.eventsCount}`);
         // console.log(game);
