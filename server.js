@@ -49,7 +49,7 @@ router.get('/sse', async (ctx) => {
       console.log('lastEventId:', lastEventId);
       // const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
       // console.log('lastEventIndex:', lastEventIndex);
-      // game.lastSentEvent = game.events[game.events.length - 1];
+      game.lastSentEvent = game.events[game.events.length - 1];
       return [{ id: 'fetch', data: 'from fetch' }];
       // return game.events.splice(lastEventIndex);
     },
