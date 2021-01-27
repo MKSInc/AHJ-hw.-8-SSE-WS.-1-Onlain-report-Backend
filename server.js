@@ -55,7 +55,8 @@ router.get('/sse', async (ctx) => {
       const lastEventIndex = game.events.findIndex((event) => `${event.id}` === lastEventId);
       console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
-      const result = game.events.splice(lastEventIndex);
+      console.log('game.lastSentEvent', game.lastSentEvent);
+      const result = game.events.splice(lastEventIndex + 1);
       console.log('return result', result);
       console.log('!!!!!!!!!!!!!!');
       return [{ id: 'fetch', data: 'from fetch' }];
@@ -64,7 +65,7 @@ router.get('/sse', async (ctx) => {
     stream(sse) {
       console.log('Request');
       const interval = setInterval(() => {
-        console.log(`Event send ${game.eventsCount}`);
+        console.log(`game.eventsCount: ${game.eventsCount}`);
         // console.log(game);
         if (!game.lastSentEvent) {
           console.log('SSE send events[0]');
@@ -72,10 +73,12 @@ router.get('/sse', async (ctx) => {
           game.lastSentEvent = game.events[0];
         } else {
           const lastSentEventIndex = game.events.findIndex((event) => event.id === game.lastSentEvent.id);
+          console.log('lastSentEventIndex', lastSentEventIndex);
           // Проверяем, появилось ли новое событие после последнего отправленного.
+          console.log(`if (${lastSentEventIndex + 1} < ${game.events.length})`);
           if (lastSentEventIndex + 1 < game.events.length) {
             const event = game.events[lastSentEventIndex + 1];
-            console.log(`{ id: ${event.id}, event: ${event.event} }`);
+            console.log(`Send: { id: ${event.id}, event: ${event.event} }`);
             sse.sendEvent(event);
             game.lastSentEvent = event;
           }
