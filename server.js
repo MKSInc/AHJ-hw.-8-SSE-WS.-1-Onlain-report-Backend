@@ -45,13 +45,18 @@ router.get('/restart', async (ctx) => {
 router.get('/sse', async (ctx) => {
   console.log('Start /sse');
   await streamEvents(ctx.req, ctx.res, {
+    // 1. Если разорвать соединение, отсоеденив кабель на десктопе или отключив мобильную сеть, то
+    // пропущенные сообщения после восстановления связи доставяться автоматически (без участия fetch).
+    // 2. Если разорвать соединение в настройках сети на десктопе, то тогда срабатывает fetch, в этом
+    // случае нужно самому вычислить пропущенные сообщения, используя lastEventId, и отправить их
+    // через return. Если восстановить связь после того как
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
-      // const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
+      const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
       // console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
-      return [{ id: 'fetch', data: 'from fetch' }];
-      // return game.events.splice(lastEventIndex);
+      // return [{ id: 'fetch', data: 'from fetch' }];
+      return game.events.splice(lastEventIndex);
     },
     stream(sse) {
       console.log('Request');
