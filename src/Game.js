@@ -2,24 +2,24 @@ const { nanoid } = require('nanoid');
 
 class Game {
   constructor() {
-    this.events = new Map();
+    this.events = [];
     this.eventsCount = 1;
     this.lastSentEvent = null;
     this.eventsInterval = null;
   }
 
   start() {
-    this.events.set(this.eventsCount, this.createEvent());
+    this.events.push(this.createEvent());
     this.eventsInterval = setInterval(() => {
       this.eventsCount += 1;
-      this.events.set(this.eventsCount, this.createEvent());
+      this.events.push(this.createEvent());
       console.log('push event', this.eventsCount);
       if (this.eventsCount === 20) clearInterval(this.eventsInterval);
     }, 2000);
   }
 
   restart() {
-    this.events = new Map();
+    this.events = [];
     this.eventsCount = 1;
     this.lastSentEvent = null;
     clearInterval(this.eventsInterval);
