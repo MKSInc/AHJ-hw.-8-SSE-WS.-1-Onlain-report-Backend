@@ -47,13 +47,14 @@ router.get('/sse', async (ctx) => {
   await streamEvents(ctx.req, ctx.res, {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
-      const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
+      // const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
       // console.log('lastEventIndex:', lastEventIndex);
-      game.lastSentEvent = game.events[game.events.length - 1];
-      return game.events.splice(lastEventIndex);
+      // game.lastSentEvent = game.events[game.events.length - 1];
+      return [{ id: 'fetch', data: 'from fetch' }];
+      // return game.events.splice(lastEventIndex);
     },
     stream(sse) {
-      console.log('Request1');
+      console.log('Request');
       const interval = setInterval(() => {
         console.log(`Event send ${game.eventsCount}`);
         // console.log(game);
