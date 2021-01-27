@@ -1,66 +1,96 @@
+/* eslint-disable max-len */
 const path = require('path');
 const Koa = require('koa');
 const koaStatic = require('koa-static');
 const Router = require('koa-router');
 const { streamEvents } = require('http-event-stream');
-const { nanoid } = require('nanoid');
+const { Game } = require('./src/Game');
 
 const app = new Koa();
+
+app.use(async (ctx, next) => {
+  ctx.response.set('Access-Control-Allow-Origin', '*');
+  console.log('start');
+  await next();
+});
 
 const dirPublic = path.join(__dirname, 'public');
 app.use(koaStatic(dirPublic));
 
-app.use(async (ctx, next) => {
-  ctx.response.set('Access-Control-Allow-Origin', '*');
-  await next();
-});
-
 const router = new Router();
-app.use(router.routes());
-app.use(router.allowedMethods());
 
-let i = 0;
-let eventId = 0;
-const events = [];
 const events2 = [{
-  id: 'qq',
+  id: 'qq1',
   data: 'test',
 }, {
   id: 'aa',
   data: 'test2',
 }];
 
+const game = new Game();
+game.start();
+
+router.get('/events', async (ctx) => {
+  console.log(ctx.params.id);
+  ctx.response.body = JSON.stringify(game.events);
+  game.lastSentEvent = game.events[game.events.length - 1];
+});
+
 router.get('/sse', async (ctx) => {
-  streamEvents(ctx.req, ctx.res, {
+  console.log('Start /sse');
+  await streamEvents(ctx.req, ctx.res, {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
-      const lastEventIndex = events.findIndex((event) => event.id === lastEventId);
-      console.log('lastEventIndex:', lastEventIndex);
+      // const lastEventIndex = events.findIndex((event) => event.id === lastEventId);
+      // console.log('lastEventIndex:', lastEventIndex);
       return events2;
     },
     stream(sse) {
+      console.log('Request');
       const interval = setInterval(() => {
-        const event = {
-          id: eventId,
-          data: `Message ${i}`,
-        };
-        console.log(event.data);
-        sse.sendEvent(event);
-        events.push(event);
-        i += 1;
-        eventId += 1;
+        console.log('Event send');
+        // console.log(game);
+        if (!game.lastSentEvent) {
+          console.log('SSE send events[0]');
+          sse.sendEvent(game.events[0]);
+          game.lastSentEvent = game.events[0];
+        } else {
+          const lastSentEventIndex = game.events.findIndex((event) => event.id === game.lastSentEvent.id);
+          // Проверяем, появилось ли новое событие после последнего отправленного.
+          if (lastSentEventIndex + 1 < game.events.length) {
+            const event = game.events[lastSentEventIndex + 1];
+            console.log(event);
+            sse.sendEvent(event);
+            game.lastSentEvent = event;
+
+            // Если это событие завершающее игру, то хорошо бы закрыть поток на стороне сервера, но ...
+            if (event.event === 'end') {
+              // eslint-disable-next-line no-console
+              console.log('End game, end stream');
+              clearInterval(interval);
+              ctx.res.status = 204; // Ни чего не дает (возможно, не правильно использую).
+              sse.close(); // Закрывает поток, но браузер переподключается по новой.
+              // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
+            }
+          }
+        }
       }, 2000);
-      return () => clearInterval(interval);
+
+      return () => {
+        // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
+        // eslint-disable-next-line no-console
+        console.log('Stream closed on client');
+        clearInterval(interval);
+      };
     },
   });
 
   ctx.respond = false;
 });
-/*
-app.use(async (ctx) => {
-  ctx.body = 'Hello!';
-});
-*/
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
 const PORT = process.env.PORT || 3000;
 // eslint-disable-next-line no-console
 app.listen(PORT, () => console.log(`Koa server has been started on port ${PORT} ...`));
