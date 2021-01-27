@@ -14,8 +14,8 @@ class Game {
       this.eventsCount += 1;
       this.events.push(this.createEvent());
       console.log('push event', this.eventsCount);
-      if (this.eventsCount === 50) clearInterval(this.eventsInterval);
-    }, 1000);
+      if (this.eventsCount === 15) clearInterval(this.eventsInterval);
+    }, 2000);
   }
 
   restart() {
@@ -28,7 +28,7 @@ class Game {
 
   getEventType() {
     if (this.eventsCount === 1) return 'start';
-    if (this.eventsCount === 50) return 'end';
+    if (this.eventsCount === 15) return 'end';
 
     const rnd = Math.random();
 

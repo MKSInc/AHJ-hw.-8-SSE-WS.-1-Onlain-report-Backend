@@ -53,7 +53,7 @@ router.get('/sse', async (ctx) => {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
       const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
-      // console.log('lastEventIndex:', lastEventIndex);
+      console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
       const result = game.events.splice(lastEventIndex);
       console.log('return result', result);
@@ -89,7 +89,7 @@ router.get('/sse', async (ctx) => {
             // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
           }
         }
-      }, 1000);
+      }, 2000);
 
       return () => {
         // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
