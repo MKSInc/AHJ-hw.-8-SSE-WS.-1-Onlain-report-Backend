@@ -55,10 +55,10 @@ router.get('/sse', async (ctx) => {
       const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
       // console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
-      // return [{ id: 'fetch', data: 'from fetch' }];
+      return [{ id: 'fetch', data: 'from fetch' }];
       const result = game.events.splice(lastEventIndex);
       console.log('return result', result);
-      return game.events.splice(lastEventIndex);
+      // return game.events.splice(lastEventIndex);
     },
     stream(sse) {
       console.log('Request');
@@ -74,7 +74,7 @@ router.get('/sse', async (ctx) => {
           // Проверяем, появилось ли новое событие после последнего отправленного.
           if (lastSentEventIndex + 1 < game.events.length) {
             const event = game.events[lastSentEventIndex + 1];
-            console.log(event);
+            console.log(`{ id: ${event.id}, event: ${event.event} }`);
             sse.sendEvent(event);
             game.lastSentEvent = event;
           }
