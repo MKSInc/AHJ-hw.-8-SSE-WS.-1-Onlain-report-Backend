@@ -31,7 +31,7 @@ const game = new Game();
 game.start();
 
 router.get('/events', async (ctx) => {
-  console.log(ctx.params.id);
+  console.log('ctx.params.id', ctx.params.id);
   ctx.response.body = JSON.stringify(game.events);
   game.lastSentEvent = game.events[game.events.length - 1];
 });
@@ -56,6 +56,8 @@ router.get('/sse', async (ctx) => {
       // console.log('lastEventIndex:', lastEventIndex);
       game.lastSentEvent = game.events[game.events.length - 1];
       // return [{ id: 'fetch', data: 'from fetch' }];
+      const result = game.events.splice(lastEventIndex);
+      console.log('return result', result);
       return game.events.splice(lastEventIndex);
     },
     stream(sse) {
