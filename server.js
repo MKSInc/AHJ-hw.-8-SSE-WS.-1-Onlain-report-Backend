@@ -47,9 +47,10 @@ router.get('/sse', async (ctx) => {
   await streamEvents(ctx.req, ctx.res, {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
-      // const lastEventIndex = events.findIndex((event) => event.id === lastEventId);
+      const lastEventIndex = game.events.findIndex((event) => event.id === lastEventId);
       // console.log('lastEventIndex:', lastEventIndex);
-      return events2;
+      game.lastSentEvent = game.events[game.events.length - 1];
+      return game.events.splice(lastEventIndex);
     },
     stream(sse) {
       console.log('Request1');
@@ -68,16 +69,15 @@ router.get('/sse', async (ctx) => {
             console.log(event);
             sse.sendEvent(event);
             game.lastSentEvent = event;
-
-            // Если это событие завершающее игру, то хорошо бы закрыть поток на стороне сервера, но ...
-            if (event.event === 'end') {
-              // eslint-disable-next-line no-console
-              console.log('End game, end stream');
-              clearInterval(interval);
-              ctx.res.status = 204; // Ни чего не дает (возможно, не правильно использую).
-              sse.close(); // Закрывает поток, но браузер переподключается по новой.
-              // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
-            }
+          }
+          // Если это событие завершающее игру, то хорошо бы закрыть поток на стороне сервера, но ...
+          if (game.lastSentEvent.event === 'end') {
+            // eslint-disable-next-line no-console
+            console.log('End game, end stream');
+            clearInterval(interval);
+            ctx.res.status = 204; // Ни чего не дает (возможно, не правильно использую).
+            sse.close(); // Закрывает поток, но браузер переподключается по новой.
+            // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
           }
         }
       }, 1000);
