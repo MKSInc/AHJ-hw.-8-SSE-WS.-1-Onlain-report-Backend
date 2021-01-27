@@ -5,14 +5,15 @@ class Game {
     this.events = [];
     this.eventsCount = 1;
     this.lastSentEvent = null;
+    this.eventsInterval = null;
   }
 
   start() {
     this.events.push(this.createEvent());
-    const eventsInterval = setInterval(() => {
+    this.eventsInterval = setInterval(() => {
       this.eventsCount += 1;
       this.events.push(this.createEvent());
-      if (this.eventsCount === 50) clearInterval(eventsInterval);
+      if (this.eventsCount === 50) clearInterval(this.eventsInterval);
     }, 1000);
   }
 
@@ -20,6 +21,7 @@ class Game {
     this.events = [];
     this.eventsCount = 1;
     this.lastSentEvent = null;
+    clearInterval(this.eventsInterval);
     this.start();
   }
 
