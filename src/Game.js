@@ -13,6 +13,7 @@ class Game {
     this.eventsInterval = setInterval(() => {
       this.eventsCount += 1;
       this.events.push(this.createEvent());
+      console.log('push event', this.eventsCount);
       if (this.eventsCount === 50) clearInterval(this.eventsInterval);
     }, 1000);
   }

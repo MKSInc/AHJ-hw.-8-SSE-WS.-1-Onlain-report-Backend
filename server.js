@@ -44,7 +44,6 @@ router.get('/restart', async (ctx) => {
 
 router.get('/sse', async (ctx) => {
   console.log('Start /sse');
-  game.lastSentEvent = null;
   await streamEvents(ctx.req, ctx.res, {
     async fetch(lastEventId) {
       console.log('lastEventId:', lastEventId);
@@ -55,7 +54,7 @@ router.get('/sse', async (ctx) => {
     stream(sse) {
       console.log('Request');
       const interval = setInterval(() => {
-        console.log('Event send');
+        console.log(`Event send ${game.eventsCount}`);
         // console.log(game);
         if (!game.lastSentEvent) {
           console.log('SSE send events[0]');
@@ -81,13 +80,13 @@ router.get('/sse', async (ctx) => {
             }
           }
         }
-      }, 2000);
+      }, 1000);
 
       return () => {
         // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
         // eslint-disable-next-line no-console
         console.log('Stream closed on client');
-        console.log('clearInterval', clearInterval);
+        console.log('interval', interval);
         clearInterval(interval);
       };
     },
