@@ -27,8 +27,7 @@
     "http-event-stream": "^0.2.0",
     "koa": "^2.13.1",
     "koa-router": "^10.0.0",
-    "koa-static": "^5.0.0",
-    "nanoid": "^3.1.20"
+    "koa-static": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "^7.18.0",

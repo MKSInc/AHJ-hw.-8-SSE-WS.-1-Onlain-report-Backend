@@ -5,12 +5,15 @@ const koaStatic = require('koa-static');
 const Router = require('koa-router');
 const { streamEvents } = require('http-event-stream');
 const { Game } = require('./src/Game');
+const { getMissedEvents, toEventSSE } = require('./src/getMissedEvents');
+
+const game = new Game();
+game.start();
 
 const app = new Koa();
 
 app.use(async (ctx, next) => {
   ctx.response.set('Access-Control-Allow-Origin', '*');
-  console.log('start');
   await next();
 });
 
@@ -19,86 +22,53 @@ app.use(koaStatic(dirPublic));
 
 const router = new Router();
 
-const events2 = [{
-  id: 'qq1',
-  data: 'test',
-}, {
-  id: 'aa',
-  data: 'test2',
-}];
-
-const game = new Game();
-game.start();
-
+// Возвращает пользователю произошедшие события, если он зашел на трансляцию после её начала
+// или обновил страницу.
 router.get('/events', async (ctx) => {
-  console.log('ctx.params.id', ctx.params.id);
   ctx.response.body = JSON.stringify(game.events);
   game.lastSentEvent = game.events[game.events.length - 1];
-  console.log('/events game.events.length', game.events.length);
-  console.log('/events game.lastSentEvent', game.lastSentEvent);
 });
 
 router.get('/restart', async (ctx) => {
+  // eslint-disable-next-line no-console
   console.log('Game has been restarted');
   game.restart();
   ctx.body = 'Game has been restarted';
 });
 
 router.get('/sse', async (ctx) => {
-  console.log('Start /sse');
   await streamEvents(ctx.req, ctx.res, {
-    // 1. Если разорвать соединение, отсоеденив кабель на десктопе или отключив мобильную сеть, то
-    // пропущенные сообщения после восстановления связи доставяться автоматически (без участия fetch).
-    // 2. Если разорвать соединение в настройках сети на десктопе, то тогда срабатывает fetch, в этом
-    // случае нужно самому вычислить пропущенные сообщения, используя lastEventId, и отправить их
-    // через return. Если восстановить связь после того как
+    // 1. Если разорвать соединение, отсоеденив кабель, то пропущенные сообщения после
+    //    восстановления связи доставяться автоматически (без участия fetch).
+    // 2. Если разорвать соединение в настройках сети компьютера или отключить мобильную связь,
+    //    то тогда срабатает fetch, в этом случае нужно самому вычислить пропущенные сообщения,
+    //    используя lastEventId, и отправить их через return.
+    // 3. В случае разрыва соединения в настройках сети компьютера, и после ее восстановления,
+    //    пропущенные собщения доставляются через fetch и сразу после этого иногда возникает
+    //    ошибка связи. Связь восстанавливается только в конце трансляции и передает все
+    //    оставшиеся сообщения. Иногда помогает обновление страницы.
     async fetch(lastEventId) {
-      console.log('lastEventId:', lastEventId);
-      const lastEventIndex = game.events.findIndex((event) => `${event.id}` === lastEventId);
-      console.log('lastEventIndex:', lastEventIndex);
-      console.log('game.events.length', game.events.length);
       game.lastSentEvent = game.events[game.events.length - 1];
-      console.log('game.lastSentEvent', game.lastSentEvent);
-      const result = game.events.slice(lastEventIndex + 1);
-      result[0].data.description = `--- start from fetch --- ${result[0].data.description}`;
-      result[result.length - 1].data.description = `--- end from fetch --- ${result[result.length - 1].data.description}`;
-      console.log('return result', result);
-      const resultSSE = result.map((event) => ({
-        id: event.id,
-        data: JSON.stringify(event.data),
-        event: event.event,
-      }));
-      console.log('!!!!!!!!!!!!!!');
-      return resultSSE;
-      // return game.events.splice(lastEventIndex);
+
+      return getMissedEvents({ lastEventId, game });
     },
     stream(sse) {
-      console.log('stream(sse) start');
-      console.log('!!!!! stream(sse) start game.events.length', game.events.length);
       const interval = setInterval(() => {
-        console.log(`game.eventsCount: ${game.eventsCount}`);
-        console.log('game.events.length', game.events.length);
+        // Если lastSentEvent пуст (в случае перезапуска игры кнопкой).
         if (!game.lastSentEvent) {
-          console.log('---- SSE send events[0] -------');
-          sse.sendEvent(game.events[0]);
+          sse.sendEvent(toEventSSE(game.events[0]));
+          // eslint-disable-next-line prefer-destructuring
           game.lastSentEvent = game.events[0];
         } else {
           const lastSentEventIndex = game.events.findIndex((event) => event.id === game.lastSentEvent.id);
-          console.log('lastSentEventIndex', lastSentEventIndex);
+
           // Проверяем, появилось ли новое событие после последнего отправленного.
-          console.log(`if (${lastSentEventIndex + 1} < ${game.events.length})`);
           if (lastSentEventIndex + 1 < game.events.length) {
             const event = game.events[lastSentEventIndex + 1];
-            console.log(`Send: { id: ${event.id}, event: ${event.event} }`);
-            const eventSSE = {
-              id: event.id,
-              data: JSON.stringify(event.data),
-              event: event.event,
-            };
-            sse.sendEvent(eventSSE);
+            sse.sendEvent(toEventSSE(event));
             game.lastSentEvent = event;
           }
-          // Если это событие завершающее игру, то хорошо бы закрыть поток на стороне сервера, но ...
+          // Если это событие завершает игру, то хорошо было бы закрыть поток на стороне сервера, но ...
           if (game.lastSentEvent.event === 'end') {
             // eslint-disable-next-line no-console
             console.log('End game, end stream');
@@ -110,7 +80,6 @@ router.get('/sse', async (ctx) => {
         }
       }, 2000);
 
-      console.log('!!!!! stream(sse) end start game.events.length', game.events.length);
       return () => {
         // Эта функция сработает в случае закрытия потока на стороне клиента (streamSSE.close()).
         // eslint-disable-next-line no-console

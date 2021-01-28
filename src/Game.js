@@ -1,5 +1,3 @@
-const { nanoid } = require('nanoid');
-
 class Game {
   constructor() {
     this.events = [];
@@ -13,8 +11,9 @@ class Game {
     this.eventsInterval = setInterval(() => {
       this.eventsCount += 1;
       this.events.push(this.createEvent());
-      console.log('push event', this.eventsCount);
-      if (this.eventsCount === 40) clearInterval(this.eventsInterval);
+      // eslint-disable-next-line no-console
+      console.log('Event created', this.eventsCount);
+      if (this.eventsCount === 50) clearInterval(this.eventsInterval);
     }, 2000);
   }
 
@@ -28,7 +27,7 @@ class Game {
 
   getEventType() {
     if (this.eventsCount === 1) return 'start';
-    if (this.eventsCount === 40) return 'end';
+    if (this.eventsCount === 50) return 'end';
 
     const rnd = Math.random();
 
@@ -46,23 +45,18 @@ class Game {
       end: 'Игра закончилась',
     };
 
-    const eventType = this.getEventType();
+    const type = this.getEventType();
 
+    // Для удобства отслеживания заголовка c lastEventId, id генерируется не рандомно, а
+    // с помощью порядкогого номера события.
     return {
       id: this.eventsCount,
       data: {
-        description: eventDescriptions[eventType] + ` ${this.eventsCount}`,
+        description: `${this.eventsCount}. ${eventDescriptions[type]}`,
         created: new Date(),
       },
-      event: eventType,
+      type,
     };
-    /*
-    return {
-      id: this.eventsCount,
-      data: eventDescriptions[eventType] + ` ${this.eventsCount}`,
-      created: new Date(),
-      event: eventType,
-    }; */
   }
 }
 
