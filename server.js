@@ -59,7 +59,9 @@ router.get('/sse', async (ctx) => {
       console.log('game.events.length', game.events.length);
       game.lastSentEvent = game.events[game.events.length - 1];
       console.log('game.lastSentEvent', game.lastSentEvent);
-      const result = game.events.slice(lastEventIndex + 1, game.events.length);
+      const result = game.events.slice(lastEventIndex + 1);
+      result[0].data = `--- start from fetch --- ${result[0].data}`;
+      result[result.length - 1].data = `--- end from fetch --- ${result[0].data}`;
       console.log('return result', result);
       console.log('!!!!!!!!!!!!!!');
       return [{ id: 'fetch', data: 'from fetch' }];
@@ -83,7 +85,12 @@ router.get('/sse', async (ctx) => {
           if (lastSentEventIndex + 1 < game.events.length) {
             const event = game.events[lastSentEventIndex + 1];
             console.log(`Send: { id: ${event.id}, event: ${event.event} }`);
-            sse.sendEvent(event);
+            const eventSSE = {
+              id: event.id,
+              data: JSON.stringify(event.data),
+              event: event.event,
+            };
+            sse.sendEvent(eventSSE);
             game.lastSentEvent = event;
           }
           // Если это событие завершающее игру, то хорошо бы закрыть поток на стороне сервера, но ...

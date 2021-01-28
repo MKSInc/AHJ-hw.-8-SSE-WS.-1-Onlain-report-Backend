@@ -47,7 +47,7 @@ class Game {
     };
 
     const eventType = this.getEventType();
-/*
+
     return {
       id: this.eventsCount,
       data: {
@@ -56,13 +56,13 @@ class Game {
       },
       event: eventType,
     };
-    */
+    /*
     return {
       id: this.eventsCount,
       data: eventDescriptions[eventType] + ` ${this.eventsCount}`,
       created: new Date(),
       event: eventType,
-    };
+    }; */
   }
 }
 
