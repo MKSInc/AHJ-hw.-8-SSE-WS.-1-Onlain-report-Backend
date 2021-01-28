@@ -61,7 +61,7 @@ router.get('/sse', async (ctx) => {
       console.log('game.lastSentEvent', game.lastSentEvent);
       const result = game.events.slice(lastEventIndex + 1);
       result[0].data.description = `--- start from fetch --- ${result[0].data.description}`;
-      result[result.length - 1].data.description = `--- end from fetch --- ${result[0].data.description}`;
+      result[result.length - 1].data.description = `--- end from fetch --- ${result[result.length - 1].data.description}`;
       console.log('return result', result);
       const resultSSE = result.map((event) => ({
         id: event.id,
