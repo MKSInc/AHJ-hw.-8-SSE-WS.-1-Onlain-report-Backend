@@ -64,7 +64,7 @@ router.get('/sse', async (ctx) => {
       result[result.length - 1].data = `--- end from fetch --- ${result[0].data}`;
       console.log('return result', result);
       console.log('!!!!!!!!!!!!!!');
-      return [{ id: 'fetch', data: 'from fetch' }];
+      return result;
       // return game.events.splice(lastEventIndex);
     },
     stream(sse) {
