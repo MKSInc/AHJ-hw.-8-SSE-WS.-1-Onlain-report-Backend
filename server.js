@@ -65,7 +65,7 @@ router.get('/sse', async (ctx) => {
       console.log('return result', result);
       const resultSSE = result.map((event) => ({
         id: event.id,
-        data: JSON.stringify(event.data()),
+        data: JSON.stringify(event.data),
         event: event.event,
       }));
       console.log('!!!!!!!!!!!!!!');
