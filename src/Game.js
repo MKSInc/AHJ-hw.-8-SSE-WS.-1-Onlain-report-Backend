@@ -52,7 +52,7 @@ class Game {
     return {
       id: this.eventsCount,
       data: {
-        description: `${this.eventsCount}. ${eventDescriptions[type]}`,
+        description: `(${this.eventsCount}) ${eventDescriptions[type]}`,
         created: new Date(),
       },
       type,

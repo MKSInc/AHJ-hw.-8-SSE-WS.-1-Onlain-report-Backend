@@ -13,7 +13,8 @@ game.start();
 const app = new Koa();
 
 app.use(async (ctx, next) => {
-  ctx.response.set('Access-Control-Allow-Origin', '*');
+  // Так как frontend на ходится на сервере, то CORS не нужен.
+  // ctx.response.set('Access-Control-Allow-Origin', '*');
   await next();
 });
 
@@ -76,6 +77,8 @@ router.get('/sse', async (ctx) => {
             ctx.res.status = 204; // Ни чего не дает (возможно, не правильно использую).
             sse.close(); // Закрывает поток, но браузер переподключается по новой.
             // Поэтому приходится закрывать на стороне клента (streamSSE.close()).
+            // Так же, возможно, автор пакета 'http-event-stream' не предусмотрел возможность
+            // закрыть поток так, чтобы браузер не переподключался.
           }
         }
       }, 2000);
