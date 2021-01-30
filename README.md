@@ -1,4 +1,4 @@
-### [Heroku server with Frontend](https://ahj-8-1-online-report.herokuapp.com/)
+### [Heroku server with Frontend](https://ahj-8-3-online-report.herokuapp.com/)
 # 8. Домашнее задание к лекции «EventSource, WebSockets»
 
 Правила сдачи задания:
@@ -14,4 +14,4 @@
 
 ## 8.1 Онлайн репортаж (Backend)
 
-### Описание задания во [Frontend](https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-1-Online-report-Frontend) части.
+### Описание задания во [Frontend](https://github.com/MKSInc/AHJ-hw.-8-SSE-WS.-3-Online-report-Frontend) части.
